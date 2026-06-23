@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>MediSense AI</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="background"></div>
+
+    <div class="container">
+      <div class="glass-card">
+        <!-- Header -->
+
+        <div class="header">
+          <h1>MediSense AI</h1>
+
+          <p>AI-Powered Medical Knowledge Assistant</p>
+
+          <div class="tech-stack">
+            <span>FAISS</span>
+            <span>LangChain</span>
+            <span>Groq</span>
+            <span>Llama 3.3</span>
+            <span>Flask</span>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+
+        <div class="disclaimer">
+          ⚠ This assistant provides health information for educational purposes
+          only and is not a substitute for professional medical advice,
+          diagnosis, or treatment.
+        </div>
+
+        <!-- Chat Section -->
+
+        <div class="chat-section">
+          <textarea
+            id="question"
+            placeholder="Describe your symptoms... e.g. fever, headache, body pain, cough, nausea"
+          ></textarea>
+
+          <button id="askBtn">Analyze Symptoms</button>
+        </div>
+
+        <!-- Answer -->
+
+        <div class="answer-box" id="answerBox">
+          <div class="default-text">
+            🩺 Enter symptoms above and click "Analyze Symptoms"
+          </div>
+        </div>
+
+        <!-- Footer -->
+
+        <div class="footer">
+          MediSense AI © 2026 | Educational Healthcare Assistant
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
