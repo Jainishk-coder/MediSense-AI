@@ -56,7 +56,7 @@ The system retrieves relevant medical information from a healthcare knowledge ba
 
 ## 🏗️ Architecture
 
-![Architecture](architecture.png)
+![Architecture](architechture.png)
 
 ---
 
@@ -64,11 +64,11 @@ The system retrieves relevant medical information from a healthcare knowledge ba
 
 ### Home Page
 
-![Home Page](screenshots/home.png)
+![Home Page](home.png)
 
 ### Symptom Analysis
 
-![Analysis](screenshots/analysis.png)
+![Analysis](analysis.png)
 
 ---
 
