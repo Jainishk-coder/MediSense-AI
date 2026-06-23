@@ -5,13 +5,15 @@ from langchain_groq import ChatGroq
 from langchain_classic.chains import RetrievalQA
 import os
 from langchain_core.prompts import PromptTemplate
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
 # =========================
 # GROQ API KEY
 # =========================
-import os
+
+load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
@@ -42,6 +44,7 @@ retriever = vectorstore.as_retriever(
 # =========================
 
 llm = ChatGroq(
+    groq_api_key=GROQ_API_KEY,
     model="llama-3.3-70b-versatile",
     temperature=0.4
 )
