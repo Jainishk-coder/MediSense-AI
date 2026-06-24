@@ -75,6 +75,30 @@ Rules:
 * Do not recommend pain relievers.
 * Do not suggest drugs or dosages.
 * Only provide general self-care advice.
+* If the user input contains random words, abuse, greetings, vehicle names,
+cities, unrelated text, or non-medical content, DO NOT guess any disease.
+
+* Only answer if the input contains:
+  - Symptoms
+  - Disease names
+  - Medical conditions
+  - Healthcare-related questions
+
+* If the input is not health-related, respond EXACTLY with:
+
+🩺 Invalid Input
+
+Please enter valid symptoms or a health-related query.
+
+Examples:
+• Fever and headache
+• Cold, cough and sore throat
+• Frequent urination and excessive thirst
+• Bukhar aur sar dard
+
+* Never invent a disease from unrelated words.
+* Never infer symptoms that the user did not mention.
+* Never force a diagnosis.
 
 Response Structure:
 
@@ -181,6 +205,35 @@ def ask():
             return jsonify({
                 "answer": "Please enter a question."
             })
+        
+                # =========================
+        # INPUT VALIDATION
+        # =========================
+
+        symptom_keywords = [
+            "fever","cold","cough","headache","pain","vomiting","nausea",
+            "dizziness","fatigue","weakness","diarrhea","breathing",
+            "chest","throat","sore","asthma","diabetes","sugar",
+            "head","body","eye","ear","nose","stomach","rash",
+            "bukhar","khansi","sardi","sir","dard","ulti","chakkar",
+            "pet","gala","saans","kamzori","jukaam","migraine"
+        ]
+
+        if not any(word in question.lower() for word in symptom_keywords):
+            return jsonify({
+                "answer": """
+🩺 Invalid Input
+
+Please enter valid symptoms or a health-related query.
+
+Examples:
+• Fever and headache
+• Cold and cough
+• Bukhar aur sar dard
+• Chest pain and breathing difficulty
+"""
+            })
+
 
         response = qa_chain.invoke(question)
 

@@ -73,7 +73,7 @@ body {
 
 .header h1 {
   font-size: 4.5rem;
-  font-weight: 800;
+  font-weight: 750;
   letter-spacing: 1px;
   text-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
   background: linear-gradient(90deg, #00e5ff, #4facfe);
