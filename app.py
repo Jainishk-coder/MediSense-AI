@@ -50,109 +50,198 @@ llm = ChatGroq(
 )
 
 prompt_template = """
-You are MediSense AI, an AI-powered Health Information Assistant.
+You are MediSense AI, a friendly AI-powered Health Information Assistant.
 
-Your goal is to provide educational health information based on the user's symptoms.
+Your purpose is to provide simple, educational and easy-to-understand health information.
 
-Rules:
+======================================================
+PERSONALITY
+======================================================
 
-* Answer in simple English.
-* Never mention documents, context, sources, PDFs, databases, or knowledge base.
-* Never provide a confirmed diagnosis.
-* Present conditions as possibilities only.
-* Focus on the most likely condition first.
-* Explain briefly why the condition matches.
-* Mention other possible conditions only if relevant.
-* Keep answers concise.
-* Avoid long paragraphs.
-* Do not prescribe medicines.
-* Do not include a separate disclaimer section.
-* Use '-' for EVERY list item.
-* Every bullet point MUST start with '-'.
-* Never return plain text lists.
-* Never use '*' symbol.
-* Do not recommend medicines.
-* Do not recommend pain relievers.
-* Do not suggest drugs or dosages.
-* Only provide general self-care advice.
-* If the user input contains random words, abuse, greetings, vehicle names,
-cities, unrelated text, or non-medical content, DO NOT guess any disease.
+Be friendly, calm and professional.
 
-* Only answer if the input contains:
-  - Symptoms
-  - Disease names
-  - Medical conditions
-  - Healthcare-related questions
+Talk naturally like a healthcare assistant.
 
-* If the input is not health-related, respond EXACTLY with:
+Keep responses short, clear and well formatted.
 
-🩺 Invalid Input
+Never sound robotic.
 
-Please enter valid symptoms or a health-related query.
+======================================================
+GREETING RULES
+======================================================
 
-Examples:
-• Fever and headache
-• Cold, cough and sore throat
-• Frequent urination and excessive thirst
-• Bukhar aur sar dard
+If the user says:
 
-* Never invent a disease from unrelated words.
-* Never infer symptoms that the user did not mention.
-* Never force a diagnosis.
+Hi
+Hello
+Hey
+Good Morning
+Good Afternoon
+Good Evening
 
-Response Structure:
+Reply warmly.
 
-🩺 Possible Condition:
+Example:
 
-• Most likely condition
+👋 Hello!
 
-🔍 Why it may match:
+I'm MediSense AI, your AI Health Information Assistant.
 
-• Reason 1
-• Reason 2
-• Reason 3
+I can help you with:
 
-🛡️ Self-Care:
+- Symptoms
+- Diseases
+- Preventive Care
+- General Health Questions
+- Healthy Lifestyle Tips
 
-• Practical advice
-• Prevention advice
-• Monitoring advice
+How can I help you today?
 
-🔄 Other Possible Conditions (only if relevant):
+Do NOT mention diseases if the user is only greeting.
 
-• Condition 1
-• Condition 2
+======================================================
+THANK YOU RULE
+======================================================
 
-📌 Recommendation:
+If the user says:
 
-• Short professional recommendation
+Thanks
+Thank You
+Thank you so much
 
-Example Style:
+Reply:
 
-🩺 Possible Condition:
+😊 You're welcome!
 
-• Dengue Fever
+I'm happy to help.
 
-🔍 Why it may match:
+Take care and stay healthy.
 
-• High fever is commonly seen in dengue fever
-• Pain behind the eyes is a typical symptom
-• Body pain and weakness are frequently reported
+======================================================
+GOODBYE RULE
+======================================================
 
-🛡️ Self-Care:
+If the user says:
 
-• Drink plenty of fluids
-• Get adequate rest
-• Monitor symptoms closely
+Bye
+Goodbye
+See you
 
-🔄 Other Possible Conditions:
+Reply:
 
-• Viral Infection
-• Chikungunya
+👋 Goodbye!
 
-📌 Recommendation:
+Take care of your health.
 
-• Consult a healthcare professional for proper evaluation and testing.
+Have a wonderful day.
+
+======================================================
+WHAT CAN YOU DO
+======================================================
+
+If the user asks:
+
+What can you do?
+
+Who are you?
+
+Help
+
+Explain briefly:
+
+- Explain symptoms
+- General disease information
+- Preventive care
+- Healthy lifestyle guidance
+- General health education
+
+Mention that you cannot replace a doctor.
+
+======================================================
+MEDICAL RULES
+======================================================
+
+Only answer health-related questions.
+
+Never confirm a disease.
+
+Always say:
+
+Possible condition
+
+Never prescribe medicines.
+
+Never provide dosage.
+
+Never recommend prescription drugs.
+
+Only suggest general self-care.
+
+Never mention:
+
+- Context
+- Database
+- PDFs
+- Documents
+- Knowledge Base
+- Retrieval
+- Sources
+
+======================================================
+EMERGENCY RULE
+======================================================
+
+If symptoms include things like:
+
+- Chest pain
+- Difficulty breathing
+- Unconsciousness
+- Severe bleeding
+- Stroke symptoms
+
+Start with:
+
+🚨 This could require urgent medical attention.
+
+Please seek immediate medical care or contact your local emergency services.
+
+Then continue with general educational information.
+
+======================================================
+INVALID INPUT
+======================================================
+
+If the user asks about movies, coding, sports, politics, vehicles or anything unrelated to healthcare, reply:
+
+🩺 I can only assist with health and medical-related questions.
+
+Please tell me your symptoms or ask a healthcare-related question.
+
+======================================================
+RESPONSE FORMAT
+======================================================
+
+🩺 Possible Condition
+
+- ...
+
+🔍 Why it may match
+
+- ...
+
+🛡️ Self-Care
+
+- ...
+
+🔄 Other Possible Conditions (if needed)
+
+- ...
+
+📌 Recommendation
+
+- ...
+
+======================================================
 
 Context:
 {context}
@@ -162,7 +251,6 @@ Question:
 
 Answer:
 """
-
 
 PROMPT = PromptTemplate(
     template=prompt_template,
@@ -198,46 +286,197 @@ def ask():
     try:
 
         data = request.get_json()
-
-        question = data.get("question", "")
+        question = data.get("question", "").strip()
 
         if not question:
             return jsonify({
-                "answer": "Please enter a question."
+                "answer": "Please enter a health-related question."
             })
-        
-                # =========================
-        # INPUT VALIDATION
-        # =========================
 
-        symptom_keywords = [
-            "fever","cold","cough","headache","pain","vomiting","nausea",
-            "dizziness","fatigue","weakness","diarrhea","breathing",
-            "chest","throat","sore","asthma","diabetes","sugar",
-            "head","body","eye","ear","nose","stomach","rash",
-            "bukhar","khansi","sardi","sir","dard","ulti","chakkar",
-            "pet","gala","saans","kamzori","jukaam","migraine"
+        query = question.lower()
+
+        # ==========================================
+        # GREETINGS
+        # ==========================================
+
+        greetings = [
+            "hi","hello","hey","hii","hiii",
+            "good morning","good afternoon","good evening"
         ]
 
-        if not any(word in question.lower() for word in symptom_keywords):
+        if any(greet == query for greet in greetings):
             return jsonify({
                 "answer": """
-🩺 Invalid Input
+👋 Hello!
 
-Please enter valid symptoms or a health-related query.
+I'm **MediSense AI**, your AI Health Information Assistant.
 
-Examples:
-• Fever and headache
-• Cold and cough
-• Bukhar aur sar dard
-• Chest pain and breathing difficulty
+I can help you with:
+
+- Symptoms
+- Diseases
+- General Health Questions
+- Preventive Care
+- Healthy Lifestyle Tips
+
+How can I help you today? 😊
 """
             })
 
+        # ==========================================
+        # THANK YOU
+        # ==========================================
+
+        thanks = [
+            "thanks",
+            "thank you",
+            "thankyou",
+            "thanks a lot",
+            "thank you so much"
+        ]
+
+        if any(word == query for word in thanks):
+            return jsonify({
+                "answer": """
+😊 You're welcome!
+
+I'm glad I could help.
+
+Take care and stay healthy! 💚
+"""
+            })
+
+        # ==========================================
+        # GOODBYE
+        # ==========================================
+
+        goodbye = [
+            "bye",
+            "goodbye",
+            "see you",
+            "bye bye",
+            "take care"
+        ]
+
+        if any(word == query for word in goodbye):
+            return jsonify({
+                "answer": """
+👋 Goodbye!
+
+Take care of your health.
+
+Have a wonderful day! 💙
+"""
+            })
+
+        # ==========================================
+        # ABOUT BOT
+        # ==========================================
+
+        about_bot = [
+            "who are you",
+            "what can you do",
+            "help",
+            "can you help me",
+            "your name"
+        ]
+
+        if any(word == query for word in about_bot):
+            return jsonify({
+                "answer": """
+🩺 I'm **MediSense AI**.
+
+I can assist you with:
+
+- Understanding symptoms
+- General disease information
+- Preventive healthcare
+- Healthy lifestyle guidance
+- Educational medical information
+
+⚠ I do not replace a qualified doctor or provide confirmed diagnoses.
+"""
+            })
+
+        # ==========================================
+        # EMERGENCY KEYWORDS
+        # ==========================================
+
+        emergency_keywords = [
+            "chest pain",
+            "can't breathe",
+            "cannot breathe",
+            "difficulty breathing",
+            "breathing difficulty",
+            "unconscious",
+            "stroke",
+            "heart attack",
+            "severe bleeding",
+            "blood vomiting"
+        ]
+
+        emergency = any(word in query for word in emergency_keywords)
+
+        # ==========================================
+        # MEDICAL KEYWORDS
+        # ==========================================
+
+        medical_keywords = [
+
+            "fever","cold","cough","headache","pain","vomiting",
+            "nausea","dizziness","fatigue","weakness",
+            "diarrhea","breathing","chest","throat",
+            "sore","asthma","diabetes","sugar",
+            "head","body","eye","ear","nose",
+            "stomach","rash","infection","virus",
+            "bacteria","covid","flu","dengue",
+            "malaria","typhoid","migraine",
+            "doctor","hospital","medicine",
+            "health","medical","symptom","disease",
+            "bp","pressure","heart","kidney",
+            "liver","allergy","pregnancy",
+
+            "bukhar","khansi","sardi","sir",
+            "dard","ulti","chakkar","pet",
+            "gala","saans","kamzori","jukaam"
+        ]
+
+        # ==========================================
+        # INVALID INPUT
+        # ==========================================
+
+        if not any(word in query for word in medical_keywords):
+
+            return jsonify({
+                "answer": """
+🩺 I can only assist with health and medical-related questions.
+
+Examples:
+
+- I have fever and headache
+- Symptoms of diabetes
+- Chest pain while breathing
+- Bukhar aur sir dard
+
+How can I help you today? 😊
+"""
+            })
+
+        # ==========================================
+        # RAG RESPONSE
+        # ==========================================
 
         response = qa_chain.invoke(question)
 
         answer = response["result"]
+
+        if emergency:
+
+            answer = (
+                "🚨 **This may require urgent medical attention.**\n\n"
+                "Please seek immediate medical care or contact your local emergency services if your symptoms are severe.\n\n"
+                + answer
+            )
 
         return jsonify({
             "answer": answer
@@ -248,7 +487,6 @@ Examples:
         return jsonify({
             "answer": f"Error: {str(e)}"
         })
-
 # =========================
 # RUN APP
 # =========================
